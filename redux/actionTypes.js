@@ -1,0 +1,8 @@
+// LOGIN
+export const LOGIN = "LOGIN";
+export const LOGOUT = "LOGOUT";
+
+// SCHEDULER
+export const ADD_SCHEDULE_NODE = "ADD_SCHEDULE_NODE";
+export const EDIT_SCHEDULE_NODE = "EDIT_SCHEDULE_NODE";
+export const REMOVE_SCHEDULE_NODE = "REMOVE_SCHEDULE_NODE";
