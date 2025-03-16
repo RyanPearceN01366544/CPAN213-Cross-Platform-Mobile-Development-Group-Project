@@ -6,19 +6,18 @@ const initialState = {
 
 export const scheduleReducer = (state, action) => {
 
-    switch (action["type"])
-    {
+    switch (action["type"]) {
         case ADD_SCHEDULE_NODE: {
             
-            break;
+            return state;
         }
         case EDIT_SCHEDULE_NODE: {
 
-            break;
+            return state;
         }
         case REMOVE_SCHEDULE_NODE: {
 
-            break;
+            return state;
         }
         default: return state;
     }
