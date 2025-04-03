@@ -1,10 +1,10 @@
 import { Text, View } from "react-native"
 
-const CallendarScreen = () => {
+const CallenderScreen = () => {
     return (
         <View>
             <Text>Callendar Screen</Text>
         </View>
     )
 }
-export default CallendarScreen;
+export default CallenderScreen;
