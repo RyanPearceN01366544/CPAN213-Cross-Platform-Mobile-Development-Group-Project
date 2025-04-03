@@ -5,7 +5,8 @@ import { Ionicons } from "@expo/vector-icons";
 const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to Your Workout Plan</Text>
+      <Text style={styles.title}>Welcome to Your Workout</Text>
+      <Text style={styles.title}>Plan</Text>
       <Text style={styles.subtitle}>Stay consistent, stay strong!</Text>
 
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Calendar")}>
