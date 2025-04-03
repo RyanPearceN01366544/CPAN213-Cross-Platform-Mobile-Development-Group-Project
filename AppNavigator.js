@@ -15,6 +15,12 @@ const MainTabs = () => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
+        headerStyle: () => {
+
+        },
+        tabBarStyle: () => {
+
+        },
         tabBarIcon: ({ color, size }) => {
           let iconName;
           if (route.name === 'Home') {
