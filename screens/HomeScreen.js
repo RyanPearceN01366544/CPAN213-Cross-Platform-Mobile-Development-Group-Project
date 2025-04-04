@@ -1,5 +1,6 @@
 import React from "react";
-import { View, Text, StyleSheet, Button } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 const HomeScreen = ({ navigation }) => {
   return (
@@ -17,12 +18,41 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#121212", 
+    paddingHorizontal: 20,
   },
   title: {
-    fontSize: 20,
+    fontSize: 28,
     fontWeight: "bold",
-    marginBottom: 20,
+    color: "#ff5733", 
+    marginBottom: 10,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: "#bdbdbd",
+    marginBottom: 30,
+    textAlign: "center",
+  },
+  button: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#ff5733",
+    padding: 15,
+    borderRadius: 12,
+    width: "85%",
+    justifyContent: "center",
+    marginVertical: 10,
+    shadowColor: "#ff5733",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 5, 
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
+    marginLeft: 10,
   },
 });
 
