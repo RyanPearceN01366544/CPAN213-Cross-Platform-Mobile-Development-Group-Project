@@ -5,8 +5,8 @@ const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to Your Workout Plan</Text>
-      <Button title="Go to Calendar" onPress={() => navigation.navigate("CalendarScreen")} />
-      <Button title="Go to Tasks" onPress={() => navigation.navigate("TasksScreen")} />
+      <Button title="Go to Calendar" onPress={() => navigation.navigate("Calendar")} />
+      <Button title="Go to Tasks" onPress={() => navigation.navigate("Tasks")} />
       <Button title="Settings" onPress={() => navigation.navigate("Setting")} />
     </View>
   );
