@@ -355,6 +355,19 @@ const styles = StyleSheet.create({
   selectedDayButton: {
     backgroundColor: "#ff5733",
   },
+  dayButton: {
+    backgroundColor: "#f2f2f2",
+    padding: 12,
+    marginRight: 12,
+    borderRadius: 8,
+  },
+  dayButtonText: {
+    fontSize: 16,
+    color: "#333",
+  },
+  selectedDayButton: {
+    backgroundColor: "#ff5733",
+  },
   saveButton: {
     backgroundColor: "#de3000",
     height: 30,
