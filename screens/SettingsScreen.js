@@ -1,9 +1,12 @@
-import { Text, View } from "react-native"
+import { Text, TextInput, View } from "react-native"
 
 const SettingsScreen = () => {
     return (
         <View>
-            <Text>Settings Screen</Text>
+            <View>
+                <Text></Text>
+                <Text></Text>
+            </View>
         </View>
     )
 }
