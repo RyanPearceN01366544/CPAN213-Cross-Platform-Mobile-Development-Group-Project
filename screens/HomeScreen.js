@@ -1,15 +1,28 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 const HomeScreen = ({ navigation }) => {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Welcome to Your Workout Plan</Text>
-      <Button title="Go to Calendar" onPress={() => navigation.navigate("Calendar")} />
-      <Button title="Go to Tasks" onPress={() => navigation.navigate("Tasks")} />
-      <Button title="Settings" onPress={() => navigation.navigate("Setting")} />
-    </View>
+      <Text style={styles.subtitle}>Stay consistent, stay strong!</Text>
+
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Calendar")}>
+        <Ionicons name="calendar" size={24} color="white" />
+        <Text style={styles.buttonText}>Go to Calendar</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Tasks")}>
+        <Ionicons name="list" size={24} color="white" />
+        <Text style={styles.buttonText}>Go to Tasks</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Setting")}>
+        <Ionicons name="settings" size={24} color="white" />
+        <Text style={styles.buttonText}>Settings</Text>
+      </TouchableOpacity>
+    </SafeAreaView>
   );
 };
 
@@ -18,13 +31,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#121212", 
+    backgroundColor: "#121212",
     paddingHorizontal: 20,
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#ff5733", 
+    color: "#ff5733",
     marginBottom: 10,
   },
   subtitle: {
@@ -46,7 +59,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 5,
-    elevation: 5, 
+    elevation: 5,
   },
   buttonText: {
     color: "white",
@@ -57,3 +70,7 @@ const styles = StyleSheet.create({
 });
 
 export default HomeScreen;
+
+
+
+
