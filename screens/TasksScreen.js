@@ -1,8 +1,7 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Button, Alert } from "react-native";
-import { Picker } from "@react-native-picker/picker";
-import { addScheduleNode } from "../redux/actions";
-import { useDispatch } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Button, ScrollView, Animated } from "react-native";
+import { db } from "../config/firebaseConfig"; // Updated import path
+import { collection, addDoc, getDocs } from "firebase/firestore";
 
 const allTasks = [
   {
@@ -25,7 +24,70 @@ const allTasks = [
       "Cooldown: 5 minutes walking",
     ],
   },
-  // Other tasks...
+  {
+    id: "3",
+    title: "Yoga & Flexibility",
+    details: [
+      "Sun Salutations: 10 reps",
+      "Downward Dog: Hold for 30 seconds",
+      "Child's Pose: 1 minute",
+      "Stretch: 10 minutes",
+    ],
+  },
+  {
+    id: "4",
+    title: "Strength Training",
+    details: [
+      "Squats: 3 sets of 20",
+      "Deadlifts: 3 sets of 15",
+      "Lunges: 3 sets of 15",
+      "Bench Press: 3 sets of 12",
+    ],
+  },
+  {
+    id: "5",
+    title: "Basketball Training",
+    details: [
+      "Dribbling drills: 5 minutes",
+      "Free throws: 10 attempts",
+      "Layups: 3 sets of 15",
+      "Passing drills: 5 minutes",
+      "Shooting practice: 10 attempts",
+    ],
+  },
+  {
+    id: "6",
+    title: "Soccer Drills",
+    details: [
+      "Passing: 3 sets of 10 passes",
+      "Dribbling: 5 minutes",
+      "Shooting: 10 attempts",
+      "Short sprints: 5 rounds",
+      "Endurance running: 15 minutes",
+    ],
+  },
+  {
+    id: "7",
+    title: "Tennis Practice",
+    details: [
+      "Forehand: 20 reps",
+      "Backhand: 20 reps",
+      "Serve practice: 10 attempts",
+      "Volley drills: 10 minutes",
+      "Footwork drills: 5 minutes",
+    ],
+  },
+  {
+    id: "8",
+    title: "Football Training",
+    details: [
+      "Passing drills: 3 sets of 10 passes",
+      "Tackling drills: 5 minutes",
+      "Sprints: 5 rounds",
+      "Agility ladder drills: 10 minutes",
+      "Touchdown practice: 10 attempts",
+    ],
+  },
 ];
 
 const TasksScreen = () => {
@@ -36,20 +98,53 @@ const TasksScreen = () => {
   const [duration, setDuration] = useState(""); // Duration input in minutes
   const [expandedTask, setExpandedTask] = useState(null); // To track expanded task for details
 
-  const handleDayChange = (taskId, day) => {
-    setSelectedDay((prev) => ({
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "tasks"));
+        querySnapshot.forEach((doc) => {
+          console.log(`${doc.id} =>`, doc.data());
+        });
+      } catch (error) {
+        console.error("Error fetching Firestore data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleTaskChange = (taskId, field, value) => {
+    setTaskData((prev) => ({
       ...prev,
-      [taskId]: day,
+      [taskId]: {
+        ...prev[taskId],
+        [field]: value,
+      },
     }));
   };
 
-  const handleTimeChange = (field, value) => {
-    if (field === "hour") {
-      setStartHour(value);
-    } else if (field === "minute") {
-      setStartMinute(value);
-    } else if (field === "duration") {
-      setDuration(value);
+  const handleSave = async (taskId) => {
+    const task = taskData[taskId];
+
+    if (!task || !task.day || !task.hour || !task.minute || !task.duration) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "tasks"), {
+        taskId,
+        day: task.day,
+        hour: parseInt(task.hour),
+        minute: parseInt(task.minute),
+        duration: parseInt(task.duration),
+        createdAt: new Date(),
+      });
+
+      alert("Task saved successfully!");
+    } catch (error) {
+      console.error("Error saving task:", error);
+      alert("Failed to save task.");
     }
   };
 
@@ -80,33 +175,34 @@ const TasksScreen = () => {
   };
 
   const renderTaskDetails = (task) => (
-    <View style={styles.detailsContainer}>
+    <Animated.View style={[styles.detailsContainer, { opacity: animation }]}>
       {task.details.map((detail, index) => (
         <Text key={index} style={styles.detailText}>
           - {detail}
         </Text>
       ))}
+
       <View style={styles.timeInputContainer}>
         <TextInput
           style={styles.timeInput}
           keyboardType="numeric"
           placeholder="Hour"
-          value={startHour}
-          onChangeText={(text) => handleTimeChange("hour", text)}
+          value={taskData[task.id]?.hour || ""}
+          onChangeText={(text) => handleTaskChange(task.id, "hour", text)}
         />
         <TextInput
           style={styles.timeInput}
           keyboardType="numeric"
           placeholder="Minute"
-          value={startMinute}
-          onChangeText={(text) => handleTimeChange("minute", text)}
+          value={taskData[task.id]?.minute || ""}
+          onChangeText={(text) => handleTaskChange(task.id, "minute", text)}
         />
         <TextInput
           style={styles.timeInput}
           keyboardType="numeric"
           placeholder="Duration (mins)"
-          value={duration}
-          onChangeText={(text) => handleTimeChange("duration", text)}
+          value={taskData[task.id]?.duration || ""}
+          onChangeText={(text) => handleTaskChange(task.id, "duration", text)}
         />
       </View>
       <View style={styles.pickerContainer}>
@@ -135,6 +231,24 @@ const TasksScreen = () => {
     </View>
   );
 
+  const toggleTaskExpansion = (taskId) => {
+    if (expandedTask === taskId) {
+      setExpandedTask(null);
+      Animated.timing(animation, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      setExpandedTask(taskId);
+      Animated.timing(animation, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Customize Your Workout</Text>
@@ -145,7 +259,7 @@ const TasksScreen = () => {
         renderItem={({ item }) => (
           <View style={styles.taskItem}>
             <Text style={styles.taskTitle}>{item.title}</Text>
-            <TouchableOpacity onPress={() => setExpandedTask(expandedTask === item.id ? null : item.id)}>
+            <TouchableOpacity onPress={() => toggleTaskExpansion(item.id)}>
               <Text style={styles.expandButton}>{expandedTask === item.id ? "Hide Details" : "Show Details"}</Text>
             </TouchableOpacity>
             {expandedTask === item.id && renderTaskDetails(item)}
@@ -159,46 +273,48 @@ const TasksScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#121212",
+    backgroundColor: "#1e1e1e", // Dark background for contrast
     padding: 20,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
     color: "#ff5733",
-    marginBottom: 20,
+    marginBottom: 30,
     textAlign: "center",
+    textTransform: "uppercase",
+    letterSpacing: 2,
   },
   taskItem: {
-    backgroundColor: "#ff5733",
-    padding: 15,
-    borderRadius: 10,
-    marginVertical: 10,
-    shadowColor: "#ff5733",
-    shadowOffset: { width: 0, height: 4 },
+    backgroundColor: "#333", // Darker background for task cards
+    padding: 20,
+    borderRadius: 15,
+    marginVertical: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.2,
-    shadowRadius: 6,
+    shadowRadius: 15,
     elevation: 5,
+    overflow: "hidden",
   },
   taskTitle: {
-    color: "white",
-    fontSize: 18,
+    color: "#fff",
+    fontSize: 20,
     fontWeight: "bold",
+    textTransform: "capitalize",
   },
   expandButton: {
-    color: "#fff",
+    color: "#ff5733",
     fontSize: 14,
     textAlign: "center",
     marginTop: 10,
     textDecorationLine: "underline",
   },
   detailsContainer: {
-    marginTop: 10,
-    paddingLeft: 15,
-    paddingTop: 10,
+    marginTop: 20,
   },
   detailText: {
-    color: "white",
+    color: "#ddd",
     fontSize: 16,
     marginVertical: 5,
   },
@@ -211,19 +327,38 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     width: "30%",
     height: 40,
-    borderRadius: 5,
+    borderRadius: 10,
     paddingLeft: 10,
     marginVertical: 5,
+    fontSize: 16,
   },
-  pickerContainer: {
-    marginTop: 10,
+  daySelectionContainer: {
+    marginTop: 15,
     backgroundColor: "#fff",
-    borderRadius: 5,
+    borderRadius: 10,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    borderColor: "#ccc",
   },
-  picker: {
-    height: 50,
-    width: "100%",
-    color: "#ff5733",
+  daySelectionTitle: {
+    fontSize: 18,
+    marginBottom: 10,
+    color: "#333",
+    fontWeight: "bold",
+  },
+  dayButton: {
+    backgroundColor: "#f2f2f2",
+    padding: 12,
+    marginRight: 12,
+    borderRadius: 8,
+  },
+  dayButtonText: {
+    fontSize: 16,
+    color: "#333",
+  },
+  selectedDayButton: {
+    backgroundColor: "#ff5733",
   },
   saveButton: {
     backgroundColor: "#de3000",
@@ -240,3 +375,4 @@ const styles = StyleSheet.create({
 });
 
 export default TasksScreen;
+
