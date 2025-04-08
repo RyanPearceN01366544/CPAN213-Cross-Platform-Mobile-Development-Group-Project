@@ -1,9 +1,14 @@
 import {
+    SET_USE_PM,
+    SET_STARTING_WEEKDAY,
+
     FETCH_SCHEDULE_NODES,
     ADD_SCHEDULE_NODE,
     EDIT_SCHEDULE_NODE,
     DELETE_SCHEDULE_NODE,
 } from "./actionTypes"
+
+import { db } from '../config/firebaseConfig';
 import { 
     collection,
     addDoc,
@@ -16,7 +21,17 @@ import {
 const workoutCollection = "workout_schedule";
 const collectionRef = collection(db, workoutCollection);
 
+// == NON-FIRESTORE FUNCTIONS ==
+export const setPmTime = (value) => ({
+    type: SET_USE_PM,
+    payload: value
+});
+export const setStartingWeekday = (value) => ({
+    type: SET_STARTING_WEEKDAY,
+    payload: value
+});
 
+// == FIRESTORE FUNCTIONS ==
 export const fetchScheduleNodes = () => dispatch => {
     try {
         const snapshotSchedule = onSnapshot(collectionRef, snapshot => {
