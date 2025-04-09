@@ -1,6 +1,12 @@
 import * as Notifications from "expo-notifications"; // Shows on the website so I'm assuming this is how you import it.
 import { useEffect } from "react";
 
+// -- NOTE!!!
+// For some unexplainable reason... This won't work with the Expo Go application properly. Apparently, you'd have to build and run the APK or use expo-dev-client which turns it into a website
+// which isn't right. So it rests here as the actual notification works on Expo Go, just not timed ones as any notification requests will automatically play instantly, no matter how long you set it.
+// I tried to build it with Expo but when I downloaded and installed the APK, it appeared as nothing despite it being the android version.
+// Regardless, I'll leave it in here for you to read and/or maybe use if we figure out why the build isn't working.
+
 const requestNotifcationPermissions = async () => {
     const {status} = await Notifications.requestPermissionsAsync();
     if (status !== "granted"){
@@ -32,15 +38,15 @@ export const fetchAllNotifications = async(title, desc, trigger) => {
     return notifications;
 }
 
-export const createNotification = async(title, desc, trigger) => {
-    console.log("-- Attempting to create notification --", "Title: ", title, "\nDescription: ", desc, "\nTrigger(s): ", trigger);
+export const createNotification = async(title, desc, trigger_) => {
+    console.log("-- Attempting to create notification --", "Title: ", title, "\nDescription: ", desc, "\nTrigger(s): ", trigger_);
     try{
         const id = await Notifications.scheduleNotificationAsync({
             content:{
                 title: title,
                 body: desc,
             },
-            trigger: { date: trigger }, // This should delay the notification.
+            trigger: trigger_, // Just adding the trigger settings.
             // Should be called properly as trigger should be an object.
             /* -- Just In-Case Options --
             This is a bunch of trigger options in case I forget them and notes on what they are.

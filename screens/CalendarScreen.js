@@ -12,7 +12,7 @@ const CalendarScreen = () => {
     // -- Todo -- 
     // 1. Make styles to make calendar look good. (WIP)
     // 2. Make temporary variables for testing. (Done)
-    // 3. Connect to Firebase (WIP)
+    // 3. Connect to Firebase (Done)
 
     useEffect(() => {
         const scheduleSubscription_ = dispatch(fetchScheduleNodes());
@@ -23,30 +23,34 @@ const CalendarScreen = () => {
         setScheduleFormatted(calendarSchedule);
     }, [calendarSchedule])
 
+    function formatMinutes(minute){
+        if (minute == 0) { return "00"; }
+        if (minute < 10) { return "0" + minute; }
+        return minute;
+    }
+    function handleTimeFormat(hour, minute = undefined){
+        if (userSettings.usePmTime) {
+            if (hour >= 12) { // PM
+                if (minute !== undefined){
+                    return (hour - 12) === 0 ? `12:${formatMinutes(minute)} PM` : `${hour}:${formatMinutes(minute)} PM`;
+                }
+                else{
+                    return (hour - 12) === 0 ? `12 PM` : `${hour} PM`;
+                }
+            }
+            else { // AM
+                return hour === 0 ? `12:${formatMinutes(minute)} AM` : `${hour}:${formatMinutes(minute)} AM`;
+            }
+        }
+        else {
+            return hour + ":" + minute;
+        }
+    }
+
     const TimeGutter = () => {
         let hours = [""];
         for (let x_ = 0; x_ < 24; x_++){
-            if (userSettings.usePmTime) {
-                if (x_ < 12) {
-                    if (x_ === 0) {
-                        hours.push("12 AM");
-                    }
-                    else {
-                        hours.push(x_ + " AM");
-                    }
-                }
-                else {
-                    if (x_ === 12){
-                        hours.push("12 PM");
-                    }
-                    else {
-                        hours.push(x_ - 12 + " PM");
-                    }
-                }
-            }
-            else {
-                hours.push(x_);
-            }
+            hours.push(handleTimeFormat(x_, 0))
         }
         return(
             <View style={styles.timeGutterView}>
@@ -85,7 +89,7 @@ const CalendarScreen = () => {
                         <View style={styles.timeNodeFull}>
                             <View>                       
                                 <Text>Title: {node_.title}</Text>
-                                <Text>{node_.startTimeHour}:{node_.startTimeMinute} - {node_.endTimeHour}:{node_.endTimeMinute}</Text>
+                                <Text>{handleTimeFormat(node_.startTimeHour, node_.startTimeMinute)} - {handleTimeFormat(node_.endTimeHour, node_>endTimeMinute)}</Text>
                             </View>
                         </View>
                     )
@@ -105,7 +109,7 @@ const CalendarScreen = () => {
                 case 3: {
                     return(
                         <View style={styles.timeNodeBottom}>
-                            <Text>{node_.startTimeHour}:{node_.startTimeMinute} - {node_.endTimeHour}:{node_.endTimeMinute}</Text>
+                                <Text>{handleTimeFormat(node_.startTimeHour, node_.startTimeMinute)} - {handleTimeFormat(node_.endTimeHour, node_.endTimeMinute)}</Text>
                         </View>
                     )
                 }
@@ -114,7 +118,7 @@ const CalendarScreen = () => {
         else // This will make an empty space for the hour.
         {
             return(
-                <View style={styles.timeNodeFull}/>
+                <View style={styles.timeNodeEmpty}/>
             )
         }
     }
@@ -222,17 +226,22 @@ const CalendarScreen = () => {
     }
 
    return(
-        <View style={styles.weekdayScroll}>
-            <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexDirection: "row" }}>
-                <ScrollView contentContainerStyle={{ minHeight: nodeHeight * 25 }}>
-                    <TimeGutter />
-                </ScrollView>
-                <ScrollView horizontal>
-                    <ScrollView contentContainerStyle={{ flexDirection: "row", minHeight: nodeHeight * 25 }}>
-                        <WeekdayHandler />
+        <View style={styles.mainContainer}>
+            <View style={styles.titleContainer}>
+                <Text style={styles.title}>Calendar</Text>
+            </View>
+            <View style={styles.weekdayScroll}>
+                <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexDirection: "row" }}>
+                    <ScrollView contentContainerStyle={{ minHeight: nodeHeight * 25 }}>
+                        <TimeGutter />
+                    </ScrollView>
+                    <ScrollView horizontal>
+                        <ScrollView contentContainerStyle={{ flexDirection: "row", minHeight: nodeHeight * 25 }}>
+                            <WeekdayHandler />
+                        </ScrollView>
                     </ScrollView>
                 </ScrollView>
-            </ScrollView>
+            </View>
         </View>
     )
 }
@@ -240,14 +249,40 @@ const CalendarScreen = () => {
 const nodeHeight = 25; // The height of each node.
 const nodeWidth = 100; // The width of each node.
 const nodeColor = "orange"; // The color of each node.
+const gutterWidth = 65; // The width of the number gutter.
 const weekdayFontSize = 15; // The fontsize of the weekdays' text.
 const styles = StyleSheet.create({
+    mainContainer: {
+        backgroundColor: "black", 
+        height: "100%", 
+        width: "100%", 
+        alignItems: "center"
+    },
+    titleContainer: {
+        paddingHorizontal: 5,
+        backgroundColor: "#C0C0C0",
+        marginTop: 10,
+        borderWidth: 7,
+        borderRadius: 6,
+        borderColor: "#848884",
+        shadowRadius: 2,
+        shadowColor: "black",
+        elevation: 5
+    },
+    title: {
+        color: "white",
+        fontSize: 30,
+    },
     weekdayScroll: {
         flex: 1,
+        backgroundColor: "#848884",
         margin: 5,
-        padding: 20,
+        paddingVertical: 7,
+        paddingHorizontal: 7,
+        borderWidth: 0.25,
         borderRadius: 6,
-        shadowColor: "black",
+        borderColor: "black",
+        shadowColor: "orange",
         shadowRadius: 5,
         elevation: 5,
     },
@@ -256,31 +291,46 @@ const styles = StyleSheet.create({
     },
     timeGutterView: {
         flexDirection: 'column',
-        width: nodeWidth / 2,
+        width: gutterWidth,
     },
     timeGutterEmptySpace: {
         height: nodeHeight,
+        borderWidth: 1,
+        borderColor: "white",
     },
     timeGutterText: {
         height: nodeHeight,
-        fontSize: 12,
-        textAlign: "right",
+        color: "white",
+        fontSize: 13,
+        textAlign: "center",
         paddingRight: 10,
         borderWidth: 1,
+        borderColor: "white",
     },
     weekdayText: {
         textDecorationLine: "underline",
         fontSize: weekdayFontSize,
         textAlign: "center",
+        color: "white",
         height: nodeHeight,
         width: nodeWidth,
         borderWidth: 1,
+        borderColor: "white",
+    },
+    timeNodeEmpty: {
+        height: nodeHeight,
+        width: nodeWidth,
+        backgroundColor: "darkgrey",
+        borderWidth: 1,
+        borderColor: "black",
+        borderStyle: "dotted",
+        borderColor: "white",
     },
     timeNodeFull: {
         height: nodeHeight,
         width: nodeWidth,
         borderWidth: 1,
-        borderColor: "black",
+        borderColor: "white",
     },
     timeNodeTop: {
         height: nodeHeight,
@@ -288,7 +338,7 @@ const styles = StyleSheet.create({
         backgroundColor: nodeColor,
         borderWidth: 1,
         borderBottomWidth: 0,
-        borderColor: "black",
+        borderColor: "white",
     },
     timeNodeMiddle: {
         height: nodeHeight,
@@ -297,7 +347,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderTopWidth: 0,
         borderBottomWidth: 0,
-        borderColor: "black",
+        borderColor: "white",
     },
     timeNodeBottom: {
         height: nodeHeight,
@@ -305,7 +355,7 @@ const styles = StyleSheet.create({
         backgroundColor: nodeColor,
         borderWidth: 1,
         borderTopWidth: 0,
-        borderColor: "black",
+        borderColor: "white",
     }
 });
 
