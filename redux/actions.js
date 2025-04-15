@@ -1,9 +1,14 @@
 import {
+    SET_USE_PM,
+    SET_STARTING_WEEKDAY,
+
     FETCH_SCHEDULE_NODES,
     ADD_SCHEDULE_NODE,
     EDIT_SCHEDULE_NODE,
     DELETE_SCHEDULE_NODE,
 } from "./actionTypes"
+
+import { db } from '../config/firebaseConfig';
 import { 
     collection,
     addDoc,
@@ -16,7 +21,17 @@ import {
 const workoutCollection = "workout_schedule";
 const collectionRef = collection(db, workoutCollection);
 
+// == NON-FIRESTORE FUNCTIONS ==
+export const setPmTime = (value) => ({
+    type: SET_USE_PM,
+    payload: value
+});
+export const setStartingWeekday = (value) => ({
+    type: SET_STARTING_WEEKDAY,
+    payload: value
+});
 
+// == FIRESTORE FUNCTIONS ==
 export const fetchScheduleNodes = () => dispatch => {
     try {
         const snapshotSchedule = onSnapshot(collectionRef, snapshot => {
@@ -84,18 +99,19 @@ export const editScheduleNode = (updatedNode) => async dispathc => {
         console.error("Error updating schedule node: ", error);
     }
 };
-export const deleteScheduleNode = (nodeID) => async dispatch => {
+export const deleteScheduleNode = (nodeID, navigation) => async dispatch => {
     try {
-        const docRef = doc(collectionRef, docID)
+        const docRef = doc(collectionRef, nodeID)
         console.log("Deleting Schedule Node!");
         await deleteDoc(docRef);
         dispatch(
             {
                 type: DELETE_SCHEDULE_NODE,
-                payload: docID
+                payload: nodeID
             }
         )
         console.log("Schedule Node Deleted!");
+        navigation;
     } catch (error) {
         console.error("Error deleting schedule node: ", error);
     }

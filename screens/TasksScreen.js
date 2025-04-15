@@ -1,9 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Picker, TextInput, Button } from "react-native";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Button, Alert } from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import { addScheduleNode } from "../redux/actions";
+import { useDispatch } from "react-redux";
 
 const allTasks = [
   {
-    id: "1",
+    id: "0",
     title: "Morning Workout",
     details: [
       "Warm-up: 5 minutes jogging",
@@ -13,7 +16,7 @@ const allTasks = [
     ],
   },
   {
-    id: "2",
+    id: "1",
     title: "Cardio Session",
     details: [
       "30-minute jog",
@@ -26,6 +29,7 @@ const allTasks = [
 ];
 
 const TasksScreen = () => {
+  const dispatch = useDispatch();
   const [selectedDay, setSelectedDay] = useState({}); // Keeps track of selected day per task
   const [startHour, setStartHour] = useState(""); // Start time hour input
   const [startMinute, setStartMinute] = useState(""); // Start time minute input
@@ -50,15 +54,29 @@ const TasksScreen = () => {
   };
 
   const handleSave = (taskId) => {
-    // Handle Firestore Add Logic here with the selected day, time, and duration
-    console.log("Saving task with data:", {
-      taskId,
-      day: selectedDay[taskId],
-      hour: startHour,
-      minute: startMinute,
-      duration,
-    });
-    // You would save this information to Firestore or wherever needed
+    const startHourNum = Number.parseInt(startHour);
+    const startMinuteNum = Number.parseInt(startMinute);
+    let endTimeHour = startHourNum + Math.floor(duration / 60);
+    let endTimeMinute = (duration % 60);
+    endTimeMinute = endTimeMinute + startMinuteNum;
+
+    
+    if (endTimeMinute >= 60) {
+      endTimeHour++;
+      endTimeMinute -= 60;
+    }
+
+    const data = {
+      title: allTasks[taskId].title,
+      details: allTasks[taskId].details,
+      weekday: selectedDay[taskId],
+      startTimeHour: startHourNum,
+      startTimeMinute: startMinuteNum,
+      endTimeHour: endTimeHour,
+      endTimeMinute: endTimeMinute
+    };
+    dispatch(addScheduleNode(data));
+    console.log("Saving task with data:", data);
   };
 
   const renderTaskDetails = (task) => (
@@ -97,16 +115,23 @@ const TasksScreen = () => {
           style={styles.picker}
           onValueChange={(day) => handleDayChange(task.id, day)}
         >
-          <Picker.Item label="Monday" value="Monday" />
-          <Picker.Item label="Tuesday" value="Tuesday" />
-          <Picker.Item label="Wednesday" value="Wednesday" />
-          <Picker.Item label="Thursday" value="Thursday" />
-          <Picker.Item label="Friday" value="Friday" />
-          <Picker.Item label="Saturday" value="Saturday" />
-          <Picker.Item label="Sunday" value="Sunday" />
+          <Picker.Item label="Monday" value={1} />
+          <Picker.Item label="Tuesday" value={2} />
+          <Picker.Item label="Wednesday" value={3} />
+          <Picker.Item label="Thursday" value={4} />
+          <Picker.Item label="Friday" value={5} />
+          <Picker.Item label="Saturday" value={6} />
+          <Picker.Item label="Sunday" value={0} />
         </Picker>
       </View>
-      <Button title="Save" onPress={() => handleSave(task.id)} />
+      <TouchableOpacity 
+        onPress={() => {
+          handleSave(task.id); Alert.alert("Task Added!", "The task that you have selected has been added!");
+        }} 
+        style={styles.saveButton}
+      >
+        <Text style={{color: "white"}}>SAVE</Text>  
+      </TouchableOpacity>
     </View>
   );
 
@@ -200,6 +225,18 @@ const styles = StyleSheet.create({
     width: "100%",
     color: "#ff5733",
   },
+  saveButton: {
+    backgroundColor: "#de3000",
+    height: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
+    borderWidth: 0.5,
+    borderColor: "white",
+    shadowColor: "black",
+    shadowRadius: 5,
+    elevation: 5,
+  }
 });
 
 export default TasksScreen;
