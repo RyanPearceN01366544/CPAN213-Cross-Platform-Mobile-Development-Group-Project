@@ -5,7 +5,7 @@ import { collection, addDoc, getDocs } from "firebase/firestore";
 
 const allTasks = [
   {
-    id: "0",
+    id: "1",
     title: "Morning Workout",
     details: [
       "Warm-up: 5 minutes jogging",
@@ -15,7 +15,7 @@ const allTasks = [
     ],
   },
   {
-    id: "1",
+    id: "2",
     title: "Cardio Session",
     details: [
       "30-minute jog",
@@ -91,12 +91,9 @@ const allTasks = [
 ];
 
 const TasksScreen = () => {
-  const dispatch = useDispatch();
-  const [selectedDay, setSelectedDay] = useState({}); // Keeps track of selected day per task
-  const [startHour, setStartHour] = useState(""); // Start time hour input
-  const [startMinute, setStartMinute] = useState(""); // Start time minute input
-  const [duration, setDuration] = useState(""); // Duration input in minutes
-  const [expandedTask, setExpandedTask] = useState(null); // To track expanded task for details
+  const [taskData, setTaskData] = useState({});
+  const [expandedTask, setExpandedTask] = useState(null);
+  const [animation] = useState(new Animated.Value(0));
 
   useEffect(() => {
     const fetchData = async () => {
@@ -148,32 +145,6 @@ const TasksScreen = () => {
     }
   };
 
-  const handleSave = (taskId) => {
-    const startHourNum = Number.parseInt(startHour);
-    const startMinuteNum = Number.parseInt(startMinute);
-    let endTimeHour = startHourNum + Math.floor(duration / 60);
-    let endTimeMinute = (duration % 60);
-    endTimeMinute = endTimeMinute + startMinuteNum;
-
-    
-    if (endTimeMinute >= 60) {
-      endTimeHour++;
-      endTimeMinute -= 60;
-    }
-
-    const data = {
-      title: allTasks[taskId].title,
-      details: allTasks[taskId].details,
-      weekday: selectedDay[taskId],
-      startTimeHour: startHourNum,
-      startTimeMinute: startMinuteNum,
-      endTimeHour: endTimeHour,
-      endTimeMinute: endTimeMinute
-    };
-    dispatch(addScheduleNode(data));
-    console.log("Saving task with data:", data);
-  };
-
   const renderTaskDetails = (task) => (
     <Animated.View style={[styles.detailsContainer, { opacity: animation }]}>
       {task.details.map((detail, index) => (
@@ -205,30 +176,28 @@ const TasksScreen = () => {
           onChangeText={(text) => handleTaskChange(task.id, "duration", text)}
         />
       </View>
-      <View style={styles.pickerContainer}>
-        <Picker
-          selectedValue={selectedDay[task.id] || "Monday"}
-          style={styles.picker}
-          onValueChange={(day) => handleDayChange(task.id, day)}
-        >
-          <Picker.Item label="Monday" value={1} />
-          <Picker.Item label="Tuesday" value={2} />
-          <Picker.Item label="Wednesday" value={3} />
-          <Picker.Item label="Thursday" value={4} />
-          <Picker.Item label="Friday" value={5} />
-          <Picker.Item label="Saturday" value={6} />
-          <Picker.Item label="Sunday" value={0} />
-        </Picker>
+
+      {/* Scrollable box for selecting the day */}
+      <View style={styles.daySelectionContainer}>
+        <Text style={styles.daySelectionTitle}>Select a Day:</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((day) => (
+            <TouchableOpacity
+              key={day}
+              style={[
+                styles.dayButton,
+                taskData[task.id]?.day === day && styles.selectedDayButton,
+              ]}
+              onPress={() => handleTaskChange(task.id, "day", day)}
+            >
+              <Text style={styles.dayButtonText}>{day}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
       </View>
-      <TouchableOpacity 
-        onPress={() => {
-          handleSave(task.id); Alert.alert("Task Added!", "The task that you have selected has been added!");
-        }} 
-        style={styles.saveButton}
-      >
-        <Text style={{color: "white"}}>SAVE</Text>  
-      </TouchableOpacity>
-    </View>
+
+      <Button title="Save Task" onPress={() => handleSave(task.id)} />
+    </Animated.View>
   );
 
   const toggleTaskExpansion = (taskId) => {
@@ -346,22 +315,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: "#333",
     fontWeight: "bold",
-<<<<<<< HEAD
-=======
-  },
-  dayButton: {
-    backgroundColor: "#f2f2f2",
-    padding: 12,
-    marginRight: 12,
-    borderRadius: 8,
-  },
-  dayButtonText: {
-    fontSize: 16,
-    color: "#333",
-  },
-  selectedDayButton: {
-    backgroundColor: "#ff5733",
->>>>>>> e7ad397 (fix up tasksScreen)
   },
   dayButton: {
     backgroundColor: "#f2f2f2",
@@ -376,18 +329,6 @@ const styles = StyleSheet.create({
   selectedDayButton: {
     backgroundColor: "#ff5733",
   },
-  saveButton: {
-    backgroundColor: "#de3000",
-    height: 30,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 10,
-    borderWidth: 0.5,
-    borderColor: "white",
-    shadowColor: "black",
-    shadowRadius: 5,
-    elevation: 5,
-  }
 });
 
 export default TasksScreen;
