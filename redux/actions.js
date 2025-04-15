@@ -99,18 +99,19 @@ export const editScheduleNode = (updatedNode) => async dispathc => {
         console.error("Error updating schedule node: ", error);
     }
 };
-export const deleteScheduleNode = (nodeID) => async dispatch => {
+export const deleteScheduleNode = (nodeID, navigation) => async dispatch => {
     try {
-        const docRef = doc(collectionRef, docID)
+        const docRef = doc(collectionRef, nodeID)
         console.log("Deleting Schedule Node!");
         await deleteDoc(docRef);
         dispatch(
             {
                 type: DELETE_SCHEDULE_NODE,
-                payload: docID
+                payload: nodeID
             }
         )
         console.log("Schedule Node Deleted!");
+        navigation;
     } catch (error) {
         console.error("Error deleting schedule node: ", error);
     }
