@@ -8,6 +8,7 @@ import TaskScreen from './screens/TasksScreen';
 import CalendarScreen from './screens/CalendarScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import { Text } from 'react-native';
+import ViewCalendarNodeScreen from './screens/ViewCalendarNodeScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -33,6 +34,12 @@ const AppNavigator = () => {
             }
             return <Ionicons name={iconName} size={size} color={color} />;
           },
+          tabBarStyle:{
+            backgroundColor: "black",
+            color: "white",
+          },
+          tabBarInactiveTintColor: "white",
+          tabBarActiveTintColor: "#ff5733",
         })}
       >
         <Tab.Screen name="Home" component={HomeScreen}/>
@@ -51,8 +58,23 @@ const AppNavigator = () => {
 
   return (
     <NavigationContainer onStateChange={handleTabName}>
-      <Stack.Navigator screenOptions={() => ({ headerShown: true, title: (pathName || "Home") })}>
+      <Stack.Navigator screenOptions={() => ({ 
+            headerShown: true, 
+            title: (pathName || "Home"), 
+            headerStyle: {
+              backgroundColor: "#ff5733",
+            },
+            headerTintColor: "white",
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              fontSize: 30,
+              textDecorationLine: 'underline',
+              fontWeight: "bold",
+            }
+          }
+        )}>
         <Stack.Screen name="Main" component={MainTabs} />
+        <Stack.Screen name="View Task" component={ViewCalendarNodeScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

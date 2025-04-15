@@ -1,5 +1,5 @@
 import { Picker } from "@react-native-picker/picker";
-import { Text, TouchableOpacity, View } from "react-native"
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { MaterialIcons } from '@expo/vector-icons'
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -69,4 +69,20 @@ const SettingsScreen = () => {
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    base: {
+        backgroundColor: "black",
+        borderColor: "#ff5733",
+        borderWidth: 2,
+    },
+    checkBox: {
+        backgroundColor: "#ff5733",
+        color: "white",
+    },
+    picker: {
+        backgroundColor: "#ff5733",
+        color: 'white',
+    },
+})
 export default SettingsScreen;

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native"
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { useDispatch, useSelector } from "react-redux";
 import { fetchScheduleNodes } from "../redux/actions";
 
-const CalendarScreen = () => {
+const CalendarScreen = ({navigation}) => {
     const dispatch = useDispatch();
     const userSettings = useSelector((state) => state.userRoot.settings);
     const calendarSchedule = useSelector((state) => state.scheduleRoot.schedule);
@@ -86,30 +86,28 @@ const CalendarScreen = () => {
             switch(piece){
                 case 0: {
                     return(
-                        <View style={styles.timeNodeFull}>
-                            <View>                       
-                                <Text>Title: {node_.title}</Text>
-                                <Text>{handleTimeFormat(node_.startTimeHour, node_.startTimeMinute)} - {handleTimeFormat(node_.endTimeHour, node_>endTimeMinute)}</Text>
-                            </View>
-                        </View>
+                        <TouchableOpacity style={styles.timeNodeFull} onPress={() => navigation.navigate("View Task", {id: id})}>
+                            <Text style={styles.timeNodeTitle}>{node_.title}</Text>
+                            <Text style={styles.timeNodeTime}>{handleTimeFormat(node_.startTimeHour, node_.startTimeMinute)} - {handleTimeFormat(node_.endTimeHour, node_>endTimeMinute)}</Text>
+                        </TouchableOpacity>
                     )
                 }
                 case 1: {
                     return(
-                        <View style={styles.timeNodeTop}>
-                            <Text>Title: {node_.title}</Text>
-                        </View>
+                        <TouchableOpacity style={styles.timeNodeTop} onPress={() => navigation.navigate("View Task", {id: id})}>
+                            <Text style={styles.timeNodeTitle}>{node_.title}</Text>
+                        </TouchableOpacity>
                     )
                 }
                 case 2: {
                     return(
-                        <View style={styles.timeNodeMiddle}/>
+                        <TouchableOpacity style={styles.timeNodeMiddle} onPress={() => navigation.navigate("View Task", {id: id})}/>
                     )
                 }
                 case 3: {
                     return(
-                        <View style={styles.timeNodeBottom}>
-                                <Text>{handleTimeFormat(node_.startTimeHour, node_.startTimeMinute)} - {handleTimeFormat(node_.endTimeHour, node_.endTimeMinute)}</Text>
+                        <View TouchableOpacity style={styles.timeNodeBottom} onPress={() => navigation.navigate("View Task", {id: id})}>
+                                <Text style={styles.timeNodeTime}>{handleTimeFormat(node_.startTimeHour, node_.startTimeMinute)} - {handleTimeFormat(node_.endTimeHour, node_.endTimeMinute)}</Text>
                         </View>
                     )
                 }
@@ -246,9 +244,10 @@ const CalendarScreen = () => {
     )
 }
 
+const mainColor = "#ff5733"; // The color of the main theme.
+const secondaryColor = "#c72400";
 const nodeHeight = 25; // The height of each node.
 const nodeWidth = 100; // The width of each node.
-const nodeColor = "orange"; // The color of each node.
 const gutterWidth = 65; // The width of the number gutter.
 const weekdayFontSize = 15; // The fontsize of the weekdays' text.
 const styles = StyleSheet.create({
@@ -317,6 +316,15 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "white",
     },
+    timeNodeTitle: {
+        fontSize: 20,
+        color: "white",
+    },
+    timeNodeTime: {
+        fontSize: 10,
+        fontStyle: 'italic',
+        color: "white",
+    },
     timeNodeEmpty: {
         height: nodeHeight,
         width: nodeWidth,
@@ -329,13 +337,14 @@ const styles = StyleSheet.create({
     timeNodeFull: {
         height: nodeHeight,
         width: nodeWidth,
+        backgroundColor: mainColor,
         borderWidth: 1,
         borderColor: "white",
     },
     timeNodeTop: {
         height: nodeHeight,
         width: nodeWidth,
-        backgroundColor: nodeColor,
+        backgroundColor: mainColor,
         borderWidth: 1,
         borderBottomWidth: 0,
         borderColor: "white",
@@ -343,7 +352,7 @@ const styles = StyleSheet.create({
     timeNodeMiddle: {
         height: nodeHeight,
         width: nodeWidth,
-        backgroundColor: nodeColor,
+        backgroundColor: mainColor,
         borderWidth: 1,
         borderTopWidth: 0,
         borderBottomWidth: 0,
@@ -352,7 +361,7 @@ const styles = StyleSheet.create({
     timeNodeBottom: {
         height: nodeHeight,
         width: nodeWidth,
-        backgroundColor: nodeColor,
+        backgroundColor: mainColor,
         borderWidth: 1,
         borderTopWidth: 0,
         borderColor: "white",
