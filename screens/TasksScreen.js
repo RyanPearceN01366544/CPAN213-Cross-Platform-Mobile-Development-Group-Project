@@ -5,7 +5,7 @@ import { collection, addDoc, getDocs } from "firebase/firestore";
 
 const allTasks = [
   {
-    id: "0",
+    id: "1",
     title: "Morning Workout",
     details: [
       "Warm-up: 5 minutes jogging",
@@ -15,7 +15,7 @@ const allTasks = [
     ],
   },
   {
-    id: "1",
+    id: "2",
     title: "Cardio Session",
     details: [
       "30-minute jog",
@@ -329,57 +329,6 @@ const styles = StyleSheet.create({
   selectedDayButton: {
     backgroundColor: "#ff5733",
   },
-  dayButton: {
-    backgroundColor: "#f2f2f2",
-    padding: 12,
-    marginRight: 12,
-    borderRadius: 8,
-  },
-  dayButtonText: {
-    fontSize: 16,
-    color: "#333",
-  },
-  selectedDayButton: {
-    backgroundColor: "#ff5733",
-  },
-  dayButton: {
-    backgroundColor: "#f2f2f2",
-    padding: 12,
-    marginRight: 12,
-    borderRadius: 8,
-  },
-  dayButtonText: {
-    fontSize: 16,
-    color: "#333",
-  },
-  selectedDayButton: {
-    backgroundColor: "#ff5733",
-  },
-  dayButton: {
-    backgroundColor: "#f2f2f2",
-    padding: 12,
-    marginRight: 12,
-    borderRadius: 8,
-  },
-  dayButtonText: {
-    fontSize: 16,
-    color: "#333",
-  },
-  selectedDayButton: {
-    backgroundColor: "#ff5733",
-  },
-  saveButton: {
-    backgroundColor: "#de3000",
-    height: 30,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 10,
-    borderWidth: 0.5,
-    borderColor: "white",
-    shadowColor: "black",
-    shadowRadius: 5,
-    elevation: 5,
-  }
 });
 
 export default TasksScreen;
